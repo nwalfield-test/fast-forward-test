@@ -1,0 +1,26 @@
+name: pull-request
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+jobs:
+  check-fast-forward:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      # We appear to need write permission for both pull-requests and
+      # issues in order to post a comment to a pull request.
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checking if fast forwarding is possible
+        id: fast-forward
+        uses: nwalfield/fast-forward-test@main
+        with:
+          merge: false
+          comment: false
+      - name: Comment
+        env:
+          COMMENT: ${{ steps.fast-forward.outputs.comment }}
+        run: echo "The comment is... $COMMENT"
